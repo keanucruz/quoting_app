@@ -226,51 +226,19 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 width: 120,
                 height: 60,
                 decoration: BoxDecoration(
-                  gradient: isSelected
-                      ? LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppTheme.primaryRed,
-                            AppTheme.primaryRed.withValues(alpha: 0.8),
-                            AppTheme.primaryRed,
-                          ],
-                        )
-                      : LinearGradient(
-                          colors: isDark
-                              ? [
-                                  AppTheme.inputBackground.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  AppTheme.cardBackground.withValues(
-                                    alpha: 0.1,
-                                  ),
-                                ]
-                              : [
-                                  Colors.grey.shade100.withValues(alpha: 0.7),
-                                  Colors.white.withValues(alpha: 0.5),
-                                ],
-                        ),
+                  color: isSelected
+                      ? (isDark
+                            ? AppTheme.cardBackground.withValues(alpha: 0.8)
+                            : Colors.white.withValues(alpha: 0.9))
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(25),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.white.withValues(alpha: 0.3)
-                        : Colors.transparent,
-                    width: 1,
-                  ),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: AppTheme.primaryRed.withValues(alpha: 0.4),
-                            blurRadius: 15,
+                            color: AppTheme.primaryRed.withValues(alpha: 0.25),
+                            blurRadius: 12,
                             spreadRadius: 0,
-                            offset: const Offset(0, 5),
-                          ),
-                          BoxShadow(
-                            color: AppTheme.primaryRed.withValues(alpha: 0.2),
-                            blurRadius: 25,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 10),
+                            offset: const Offset(0, 4),
                           ),
                         ]
                       : [
@@ -287,12 +255,24 @@ class _MainScreenState extends ConsumerState<MainScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(2),
+                      width: 36,
+                      height: 36,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Colors.white.withValues(alpha: 0.2)
+                            ? AppTheme.primaryRed
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: AppTheme.primaryRed.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
                       ),
                       child: Icon(
                         icon,
@@ -301,7 +281,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                             : isDark
                             ? AppTheme.accentSilver.withValues(alpha: 0.8)
                             : AppTheme.lightTextSecondary,
-                        size: isSelected ? 26 : 22,
+                        size: isSelected ? 20 : 22,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -309,15 +289,15 @@ class _MainScreenState extends ConsumerState<MainScreen>
                       label,
                       style: TextStyle(
                         color: isSelected
-                            ? Colors.white
+                            ? AppTheme.primaryRed
                             : isDark
                             ? AppTheme.accentSilver.withValues(alpha: 0.8)
                             : AppTheme.lightTextSecondary,
-                        fontSize: isSelected ? 12 : 11,
+                        fontSize: isSelected ? 11 : 10,
                         fontWeight: isSelected
                             ? FontWeight.w700
                             : FontWeight.w500,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ],
