@@ -1,8 +1,6 @@
 {
     "buildCommand": "./build.sh",
     "outputDirectory": "build/web",
-    "installCommand": "echo 'No install needed'",
-    "framework": null,
     "rewrites": [
         {
             "source": "/(.*)",
