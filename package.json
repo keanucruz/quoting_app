@@ -1,0 +1,10 @@
+{
+    "name": "showboard-quoting-app",
+    "version": "1.0.0",
+    "description": "Flutter web app for car photography quoting",
+    "scripts": {
+        "build": "flutter build web"
+    },
+    "dependencies": {},
+    "devDependencies": {}
+}
