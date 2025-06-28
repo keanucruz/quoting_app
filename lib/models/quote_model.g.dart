@@ -49,7 +49,7 @@ class QuoteAdapter extends TypeAdapter<Quote> {
       hasProtectiveCase: fields[28] as bool,
       standType: fields[29] as StandType,
       hasStandCarryingCase: fields[30] as bool,
-      hasCombinationCase: fields[34] as bool,
+      hasCombinationCase: fields[34] as bool?,
       createdAt: fields[31] as DateTime?,
       updatedAt: fields[32] as DateTime?,
     );

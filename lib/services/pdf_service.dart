@@ -149,7 +149,7 @@ class PdfService {
       _buildInfoRow('Printed on', printMaterialsText),
       _buildInfoRow('Substrate', substratesText),
       _buildInfoRow('Framed', quote.isFramed ? 'Yes' : 'No'),
-      if (quote.hasCombinationCase)
+      if (quote.effectiveHasCombinationCase)
         _buildInfoRow('Combination Case', 'Yes')
       else ...[
         _buildInfoRow(
@@ -166,7 +166,7 @@ class PdfService {
       if (quote.standType == StandType.premium ||
           quote.standType == StandType.premiumSilver ||
           quote.standType == StandType.premiumBlack)
-        if (!quote.hasCombinationCase)
+        if (!quote.effectiveHasCombinationCase)
           _buildInfoRow(
             'Stand Carrying Case',
             quote.hasStandCarryingCase ? 'Yes' : 'No',

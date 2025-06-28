@@ -436,7 +436,7 @@ class EnhancedPriceBreakdownSheet extends StatelessWidget {
     }
 
     // Cases
-    if (quote.hasCombinationCase) {
+    if (quote.effectiveHasCombinationCase) {
       items.add(
         SelectedItem(
           category: 'Protection',

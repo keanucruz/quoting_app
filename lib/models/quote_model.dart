@@ -102,7 +102,7 @@ class Quote extends HiveObject {
   bool hasStandCarryingCase;
 
   @HiveField(34)
-  bool hasCombinationCase;
+  bool? hasCombinationCase;
 
   @HiveField(31)
   DateTime createdAt;
@@ -143,7 +143,7 @@ class Quote extends HiveObject {
     this.hasProtectiveCase = false,
     this.standType = StandType.none,
     this.hasStandCarryingCase = false,
-    this.hasCombinationCase = false,
+    this.hasCombinationCase,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : id = id ?? const Uuid().v4(),
@@ -157,6 +157,9 @@ class Quote extends HiveObject {
   // Getter for veteran discount percentage with default value
   double get effectiveVeteranDiscountPercentage =>
       veteranDiscountPercentage ?? 5.0;
+
+  // Getter for combination case with default value
+  bool get effectiveHasCombinationCase => hasCombinationCase ?? false;
 
   Quote copyWith({
     String? id,

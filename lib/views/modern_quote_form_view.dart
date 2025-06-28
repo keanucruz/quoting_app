@@ -414,11 +414,11 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
                               Expanded(
                                 child: _buildModernSwitchTile(
                                   'Protective Case',
-                                  quote.hasCombinationCase
+                                  quote.effectiveHasCombinationCase
                                       ? 'Disabled (using combination case)'
                                       : 'Weather protection',
                                   quote.hasProtectiveCase,
-                                  quote.hasCombinationCase
+                                  quote.effectiveHasCombinationCase
                                       ? (_) {} // Disabled callback
                                       : quoteNotifier.updateHasProtectiveCase,
                                   icon: Icons.shield_outlined,
@@ -443,11 +443,11 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
                           // Only protective case available - show full width
                           _buildModernSwitchTile(
                             'Protective Case',
-                            quote.hasCombinationCase
+                            quote.effectiveHasCombinationCase
                                 ? 'Disabled (using combination case)'
                                 : 'Weather protection',
                             quote.hasProtectiveCase,
-                            quote.hasCombinationCase
+                            quote.effectiveHasCombinationCase
                                 ? (_) {} // Disabled callback
                                 : quoteNotifier.updateHasProtectiveCase,
                             icon: Icons.shield_outlined,
@@ -460,7 +460,7 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
                           _buildModernSwitchTile(
                             'Combination Case',
                             'Combined protective case & stand carrying case (\$39)',
-                            quote.hasCombinationCase,
+                            quote.effectiveHasCombinationCase,
                             quoteNotifier.updateHasCombinationCase,
                             icon: Icons.inventory_2_outlined,
                             activeColor: AppTheme.successGreen,
@@ -491,11 +491,11 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
                           const SizedBox(height: 20),
                           _buildModernSwitchTile(
                             'Stand Carrying Case',
-                            quote.hasCombinationCase
+                            quote.effectiveHasCombinationCase
                                 ? 'Disabled (using combination case)'
                                 : 'Premium protective carrying case',
                             quote.hasStandCarryingCase,
-                            quote.hasCombinationCase
+                            quote.effectiveHasCombinationCase
                                 ? (_) {} // Disabled callback
                                 : quoteNotifier.updateHasStandCarryingCase,
                             icon: Icons.luggage_outlined,

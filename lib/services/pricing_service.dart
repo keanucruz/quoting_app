@@ -106,7 +106,7 @@ class PricingService {
     total += standPricing[quote.standType] ?? 0.0;
 
     // Cases
-    if (quote.hasCombinationCase) {
+    if (quote.effectiveHasCombinationCase) {
       // Combination case (includes both protective case and stand carrying case)
       total += combinationCasePrice;
     } else {
@@ -211,7 +211,7 @@ class PricingService {
     }
 
     // Cases
-    if (quote.hasCombinationCase) {
+    if (quote.effectiveHasCombinationCase) {
       breakdown['Combination Display Stand & Case'] = combinationCasePrice;
     } else {
       // Individual cases

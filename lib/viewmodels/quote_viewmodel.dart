@@ -192,7 +192,7 @@ class QuoteNotifier extends StateNotifier<Quote> {
   void updateHasProtectiveCase(bool value) {
     state = state.copyWith(hasProtectiveCase: value);
     // If enabling protective case and combination case is on, turn off combination case
-    if (value && state.hasCombinationCase) {
+    if (value && state.effectiveHasCombinationCase) {
       state = state.copyWith(hasCombinationCase: false);
     }
   }
@@ -210,7 +210,7 @@ class QuoteNotifier extends StateNotifier<Quote> {
   void updateHasStandCarryingCase(bool value) {
     state = state.copyWith(hasStandCarryingCase: value);
     // If enabling stand carrying case and combination case is on, turn off combination case
-    if (value && state.hasCombinationCase) {
+    if (value && state.effectiveHasCombinationCase) {
       state = state.copyWith(hasCombinationCase: false);
     }
   }
