@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/quote_model.dart';
 import '../services/storage_service.dart';
 import '../services/pdf_service.dart';
+import '../services/pricing_service.dart';
 
 // Provider for the current quote being edited
 final currentQuoteProvider = StateNotifierProvider<QuoteNotifier, Quote>((ref) {
@@ -17,6 +18,18 @@ final quotesProvider = StateNotifierProvider<QuotesNotifier, List<Quote>>((
 
 // Provider for loading state
 final isLoadingProvider = StateProvider<bool>((ref) => false);
+
+// Provider for total price calculation
+final totalPriceProvider = Provider<double>((ref) {
+  final quote = ref.watch(currentQuoteProvider);
+  return PricingService.calculateTotalPrice(quote);
+});
+
+// Provider for price breakdown
+final priceBreakdownProvider = Provider<Map<String, double>>((ref) {
+  final quote = ref.watch(currentQuoteProvider);
+  return PricingService.getItemizedPricing(quote);
+});
 
 class QuoteNotifier extends StateNotifier<Quote> {
   QuoteNotifier() : super(Quote());
@@ -43,6 +56,10 @@ class QuoteNotifier extends StateNotifier<Quote> {
 
   void updateIsVeteran(bool value) {
     state = state.copyWith(isVeteran: value);
+  }
+
+  void updateVeteranDiscountPercentage(double value) {
+    state = state.copyWith(veteranDiscountPercentage: value);
   }
 
   void updateAddress(String value) {
@@ -103,6 +120,15 @@ class QuoteNotifier extends StateNotifier<Quote> {
 
   void updateProductSize(ProductSize value) {
     state = state.copyWith(productSize: value);
+    // Reset protective case and combination case if size doesn't support it
+    if (value != ProductSize.size16x24 &&
+        value != ProductSize.size20x30 &&
+        value != ProductSize.size24x36) {
+      state = state.copyWith(
+        hasProtectiveCase: false,
+        hasCombinationCase: false,
+      );
+    }
   }
 
   void updateCustomSize(String value) {
@@ -131,6 +157,15 @@ class QuoteNotifier extends StateNotifier<Quote> {
     state = state.copyWith(printMaterials: currentMaterials);
   }
 
+  void setPrintMaterial(PrintMaterial material) {
+    // For single-select, replace all materials with just this one
+    state = state.copyWith(printMaterials: [material]);
+    // Turn off framing if photo paper is not selected
+    if (material != PrintMaterial.photoPaper && state.isFramed) {
+      state = state.copyWith(isFramed: false);
+    }
+  }
+
   void updateSubstrates(List<Substrate> value) {
     state = state.copyWith(substrates: value);
   }
@@ -145,24 +180,50 @@ class QuoteNotifier extends StateNotifier<Quote> {
     state = state.copyWith(substrates: currentSubstrates);
   }
 
+  void setSubstrate(Substrate substrate) {
+    // For single-select, replace all substrates with just this one
+    state = state.copyWith(substrates: [substrate]);
+  }
+
   void updateIsFramed(bool value) {
     state = state.copyWith(isFramed: value);
   }
 
   void updateHasProtectiveCase(bool value) {
     state = state.copyWith(hasProtectiveCase: value);
+    // If enabling protective case and combination case is on, turn off combination case
+    if (value && state.hasCombinationCase) {
+      state = state.copyWith(hasCombinationCase: false);
+    }
   }
 
   void updateStandType(StandType value) {
     state = state.copyWith(standType: value);
     // Reset carrying case if not premium
-    if (value != StandType.premium) {
+    if (value != StandType.premium &&
+        value != StandType.premiumSilver &&
+        value != StandType.premiumBlack) {
       state = state.copyWith(hasStandCarryingCase: false);
     }
   }
 
   void updateHasStandCarryingCase(bool value) {
     state = state.copyWith(hasStandCarryingCase: value);
+    // If enabling stand carrying case and combination case is on, turn off combination case
+    if (value && state.hasCombinationCase) {
+      state = state.copyWith(hasCombinationCase: false);
+    }
+  }
+
+  void updateHasCombinationCase(bool value) {
+    state = state.copyWith(hasCombinationCase: value);
+    // If enabling combination case, turn off individual cases
+    if (value) {
+      state = state.copyWith(
+        hasProtectiveCase: false,
+        hasStandCarryingCase: false,
+      );
+    }
   }
 
   void loadQuote(Quote quote) {

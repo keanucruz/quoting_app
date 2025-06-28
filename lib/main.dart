@@ -104,93 +104,32 @@ class _MainScreenState extends ConsumerState<MainScreen>
     return Container(
       margin: const EdgeInsets.all(20),
       height: 80,
-      child: Stack(
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.cardBackground : Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: isDark
+              ? AppTheme.lightGrey.withValues(alpha: 0.3)
+              : Colors.grey.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // Background blur effect
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isDark
-                    ? [
-                        AppTheme.primaryBlack.withValues(alpha: 0.9),
-                        AppTheme.cardBackground.withValues(alpha: 0.95),
-                        AppTheme.primaryBlack.withValues(alpha: 0.9),
-                      ]
-                    : [
-                        Colors.white.withValues(alpha: 0.95),
-                        AppTheme.lightCardBackground.withValues(alpha: 0.98),
-                        Colors.white.withValues(alpha: 0.95),
-                      ],
-              ),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: AppTheme.primaryRed.withValues(alpha: 0.3),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primaryRed.withValues(alpha: 0.2),
-                  blurRadius: 25,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha: 0.4)
-                      : Colors.grey.withValues(alpha: 0.15),
-                  blurRadius: 20,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: isDark
-                        ? [
-                            AppTheme.primaryBlack.withValues(alpha: 0.1),
-                            AppTheme.cardBackground.withValues(alpha: 0.05),
-                          ]
-                        : [
-                            Colors.white.withValues(alpha: 0.1),
-                            AppTheme.lightCardBackground.withValues(
-                              alpha: 0.05,
-                            ),
-                          ],
-                  ),
-                ),
-              ),
-            ),
+          _buildFloatingNavItem(
+            icon: Icons.camera_alt,
+            label: 'New Quote',
+            index: 0,
+            isSelected: _selectedIndex == 0,
+            isDark: isDark,
           ),
-
-          // Navigation Items
-          Positioned.fill(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildFloatingNavItem(
-                  icon: Icons.camera_alt,
-                  label: 'New Quote',
-                  index: 0,
-                  isSelected: _selectedIndex == 0,
-                  isDark: isDark,
-                ),
-                _buildFloatingNavItem(
-                  icon: Icons.folder_open,
-                  label: 'History',
-                  index: 1,
-                  isSelected: _selectedIndex == 1,
-                  isDark: isDark,
-                ),
-              ],
-            ),
+          _buildFloatingNavItem(
+            icon: Icons.folder_open,
+            label: 'History',
+            index: 1,
+            isSelected: _selectedIndex == 1,
+            isDark: isDark,
           ),
         ],
       ),
@@ -222,35 +161,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
               offset: isSelected
                   ? Offset(0, -_floatingAnimation.value)
                   : Offset.zero,
-              child: Container(
+              child: SizedBox(
                 width: 120,
                 height: 60,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? (isDark
-                            ? AppTheme.cardBackground.withValues(alpha: 0.8)
-                            : Colors.white.withValues(alpha: 0.9))
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: AppTheme.primaryRed.withValues(alpha: 0.25),
-                            blurRadius: 12,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : [
-                          BoxShadow(
-                            color: isDark
-                                ? Colors.black.withValues(alpha: 0.1)
-                                : Colors.grey.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -262,17 +175,6 @@ class _MainScreenState extends ConsumerState<MainScreen>
                             ? AppTheme.primaryRed
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(18),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: AppTheme.primaryRed.withValues(
-                                    alpha: 0.4,
-                                  ),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
                       ),
                       child: Icon(
                         icon,

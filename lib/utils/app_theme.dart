@@ -418,6 +418,7 @@ class OptionItem {
   final IconData icon;
   final Color? color;
   final String? image;
+  final double? price;
 
   const OptionItem({
     required this.id,
@@ -426,6 +427,7 @@ class OptionItem {
     required this.icon,
     this.color,
     this.image,
+    this.price,
   });
 }
 
@@ -437,13 +439,6 @@ class AppOptions {
       description: 'High-quality glossy finish',
       icon: Icons.photo,
       color: Colors.white,
-    ),
-    OptionItem(
-      id: 'vinyl',
-      title: 'Vinyl',
-      description: 'Weather-resistant finish',
-      icon: Icons.layers,
-      color: Color(0xFF4CAF50),
     ),
     OptionItem(
       id: 'aluminum',
@@ -513,24 +508,42 @@ class AppOptions {
       description: 'No stand required',
       icon: Icons.do_not_disturb,
       color: Colors.grey,
+      price: 0.0,
     ),
     OptionItem(
       id: 'economy',
-      title: 'Economy',
+      title: 'Economy Black',
       description: 'Basic stand solution',
       icon: Icons.support,
       color: Color(0xFF4CAF50),
+      price: 224.0,
     ),
     OptionItem(
-      id: 'premium',
-      title: 'Premium',
+      id: 'premium_silver',
+      title: 'Premium Silver',
       description: 'Professional stand',
       icon: Icons.star,
-      color: AppTheme.primaryRed,
+      color: Color(0xFF9E9E9E),
+      price: 349.0,
+    ),
+    OptionItem(
+      id: 'premium_black',
+      title: 'Premium Black',
+      description: 'Professional stand',
+      icon: Icons.star,
+      color: Color(0xFF424242),
+      price: 349.0,
     ),
   ];
 
   static const List<OptionItem> productSizes = [
+    OptionItem(
+      id: '8x12',
+      title: '8" × 12"',
+      description: 'Compact size',
+      icon: Icons.crop_free,
+      color: Color(0xFF9C27B0),
+    ),
     OptionItem(
       id: '16x24',
       title: '16" × 24"',

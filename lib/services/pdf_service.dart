@@ -85,7 +85,12 @@ class PdfService {
   static pw.Widget _buildCustomerInfo(Quote quote) {
     return _buildSection('Customer Information', [
       _buildInfoRow('Name', quote.customerName),
-      _buildInfoRow('Veteran', quote.isVeteran ? 'Yes' : 'No'),
+      _buildInfoRow(
+        'Veteran',
+        quote.isVeteran
+            ? 'Yes (${quote.effectiveVeteranDiscountPercentage.toStringAsFixed(0)}% discount)'
+            : 'No',
+      ),
       _buildInfoRow('Address', quote.address),
       _buildInfoRow(
         'City, State, Zip',
@@ -144,18 +149,28 @@ class PdfService {
       _buildInfoRow('Printed on', printMaterialsText),
       _buildInfoRow('Substrate', substratesText),
       _buildInfoRow('Framed', quote.isFramed ? 'Yes' : 'No'),
-      _buildInfoRow('Protective Case', quote.hasProtectiveCase ? 'Yes' : 'No'),
+      if (quote.hasCombinationCase)
+        _buildInfoRow('Combination Case', 'Yes')
+      else ...[
+        _buildInfoRow(
+          'Protective Case',
+          quote.hasProtectiveCase ? 'Yes' : 'No',
+        ),
+      ],
     ]);
   }
 
   static pw.Widget _buildStandInfo(Quote quote) {
     return _buildSection('Stand Information', [
       _buildInfoRow('Stand Type', quote.standType.displayName),
-      if (quote.standType == StandType.premium)
-        _buildInfoRow(
-          'Stand Carrying Case',
-          quote.hasStandCarryingCase ? 'Yes' : 'No',
-        ),
+      if (quote.standType == StandType.premium ||
+          quote.standType == StandType.premiumSilver ||
+          quote.standType == StandType.premiumBlack)
+        if (!quote.hasCombinationCase)
+          _buildInfoRow(
+            'Stand Carrying Case',
+            quote.hasStandCarryingCase ? 'Yes' : 'No',
+          ),
     ]);
   }
 

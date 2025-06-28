@@ -5,6 +5,9 @@ import '../models/quote_model.dart';
 import '../viewmodels/quote_viewmodel.dart';
 import '../utils/app_theme.dart';
 import '../widgets/modern_ui_components.dart';
+import '../widgets/draggable_price_display.dart';
+import '../widgets/enhanced_price_breakdown.dart';
+import '../services/pricing_service.dart';
 import '../providers/theme_provider.dart';
 
 class ModernQuoteFormView extends ConsumerStatefulWidget {
@@ -89,357 +92,554 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: Scrollbar(
-          controller: _scrollController,
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Order Info Section
-                ModernSectionCard(
-                  title: 'Order Information',
-                  icon: Icons.assignment_outlined,
+      body: Stack(
+        children: [
+          Form(
+            key: _formKey,
+            child: Scrollbar(
+              controller: _scrollController,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildModernTextField(
-                      'Completed By',
-                      quote.completedBy,
-                      quoteNotifier.updateCompletedBy,
-                      required: true,
-                      icon: Icons.person_outline,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
+                    // Order Info Section
+                    ModernSectionCard(
+                      title: 'Order Information',
+                      icon: Icons.assignment_outlined,
                       children: [
-                        Expanded(
-                          child: _buildDateTimePicker(
-                            'Date',
-                            quote.date,
-                            quoteNotifier.updateDate,
-                            isTimePicker: false,
-                          ),
+                        _buildModernTextField(
+                          'Completed By',
+                          quote.completedBy,
+                          quoteNotifier.updateCompletedBy,
+                          required: true,
+                          icon: Icons.person_outline,
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildDateTimePicker(
-                            'Time',
-                            quote.time,
-                            quoteNotifier.updateTime,
-                            isTimePicker: true,
-                          ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDateTimePicker(
+                                'Date',
+                                quote.date,
+                                quoteNotifier.updateDate,
+                                isTimePicker: false,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildDateTimePicker(
+                                'Time',
+                                quote.time,
+                                quoteNotifier.updateTime,
+                                isTimePicker: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        _buildModernTextField(
+                          'Car Event Name',
+                          quote.carEventName,
+                          quoteNotifier.updateCarEventName,
+                          icon: Icons.event_outlined,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    _buildModernTextField(
-                      'Car Event Name',
-                      quote.carEventName,
-                      quoteNotifier.updateCarEventName,
-                      icon: Icons.event_outlined,
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                // Customer Info Section
-                ModernSectionCard(
-                  title: 'Customer Information',
-                  icon: Icons.person_outlined,
-                  children: [
-                    _buildModernTextField(
-                      'Customer Name',
-                      quote.customerName,
-                      quoteNotifier.updateCustomerName,
-                      required: true,
-                      icon: Icons.badge_outlined,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernSwitchTile(
-                      'Veteran',
-                      'Military service discount eligible',
-                      quote.isVeteran,
-                      quoteNotifier.updateIsVeteran,
-                      icon: Icons.military_tech_outlined,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernTextField(
-                      'Address',
-                      quote.address,
-                      quoteNotifier.updateAddress,
-                      icon: Icons.location_on_outlined,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
+                    // Customer Info Section
+                    ModernSectionCard(
+                      title: 'Customer Information',
+                      icon: Icons.person_outlined,
                       children: [
-                        Expanded(
-                          flex: 2,
-                          child: _buildModernTextField(
-                            'City',
-                            quote.city,
-                            quoteNotifier.updateCity,
-                            icon: Icons.location_city_outlined,
-                          ),
+                        _buildModernTextField(
+                          'Customer Name',
+                          quote.customerName,
+                          quoteNotifier.updateCustomerName,
+                          required: true,
+                          icon: Icons.badge_outlined,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildModernTextField(
-                            'State',
-                            quote.state,
-                            quoteNotifier.updateState,
-                            icon: Icons.map_outlined,
-                          ),
+                        const SizedBox(height: 20),
+                        _buildModernSwitchTile(
+                          'Veteran',
+                          'Military service discount eligible',
+                          quote.isVeteran,
+                          quoteNotifier.updateIsVeteran,
+                          icon: Icons.military_tech_outlined,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildModernTextField(
-                            'ZIP',
-                            quote.zipCode,
-                            quoteNotifier.updateZipCode,
-                            icon: Icons.local_post_office_outlined,
+                        if (quote.isVeteran) ...[
+                          const SizedBox(height: 20),
+                          _buildVeteranDiscountField(
+                            quote.effectiveVeteranDiscountPercentage,
+                            quoteNotifier.updateVeteranDiscountPercentage,
                           ),
+                        ],
+                        const SizedBox(height: 20),
+                        _buildModernTextField(
+                          'Address',
+                          quote.address,
+                          quoteNotifier.updateAddress,
+                          icon: Icons.location_on_outlined,
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: _buildModernTextField(
+                                'City',
+                                quote.city,
+                                quoteNotifier.updateCity,
+                                icon: Icons.location_city_outlined,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildModernTextField(
+                                'State',
+                                quote.state,
+                                quoteNotifier.updateState,
+                                icon: Icons.map_outlined,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildModernTextField(
+                                'ZIP',
+                                quote.zipCode,
+                                quoteNotifier.updateZipCode,
+                                icon: Icons.local_post_office_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        _buildModernTextField(
+                          'Phone Number',
+                          quote.phoneNumber,
+                          quoteNotifier.updatePhoneNumber,
+                          required: true,
+                          keyboardType: TextInputType.phone,
+                          icon: Icons.phone_outlined,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildModernTextField(
+                          'Email Address',
+                          quote.emailAddress,
+                          quoteNotifier.updateEmailAddress,
+                          required: true,
+                          keyboardType: TextInputType.emailAddress,
+                          icon: Icons.email_outlined,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    _buildModernTextField(
-                      'Phone Number',
-                      quote.phoneNumber,
-                      quoteNotifier.updatePhoneNumber,
-                      required: true,
-                      keyboardType: TextInputType.phone,
-                      icon: Icons.phone_outlined,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernTextField(
-                      'Email Address',
-                      quote.emailAddress,
-                      quoteNotifier.updateEmailAddress,
-                      required: true,
-                      keyboardType: TextInputType.emailAddress,
-                      icon: Icons.email_outlined,
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                // Vehicle Info Section
-                ModernSectionCard(
-                  title: 'Vehicle Information',
-                  icon: Icons.directions_car_outlined,
-                  children: [
-                    _buildModernTextField(
-                      'Car Make',
-                      quote.carMake,
-                      quoteNotifier.updateCarMake,
-                      icon: Icons.car_rental_outlined,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernTextField(
-                      'Car Model',
-                      quote.carModel,
-                      quoteNotifier.updateCarModel,
-                      icon: Icons.drive_eta_outlined,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernTextField(
-                      'Car Color',
-                      quote.carColor,
-                      quoteNotifier.updateCarColor,
-                      icon: Icons.palette_outlined,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Photoshoot Section
-                ModernSectionCard(
-                  title: 'Photoshoot Details',
-                  icon: Icons.camera_alt_outlined,
-                  children: [
-                    _buildModernRadioOptions(
-                      'Photos taken by',
-                      PhotoTakenBy.values,
-                      quote.photoTakenBy,
-                      quoteNotifier.updatePhotoTakenBy,
-                      (value) => value.displayName,
-                      _getPhotoTakenByIcon,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernTextField(
-                      'Available Dates',
-                      quote.availableDates,
-                      quoteNotifier.updateAvailableDates,
-                      maxLines: 3,
-                      icon: Icons.date_range_outlined,
-                      hint: 'List your available dates for the photoshoot',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernSwitchTile(
-                      'Priority Service',
-                      'Rush processing for faster delivery',
-                      quote.isPriorityService,
-                      quoteNotifier.updateIsPriorityService,
-                      icon: Icons.speed_outlined,
-                      activeColor: AppTheme.warningOrange,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDateTimePicker(
-                      'Need by Date',
-                      quote.needByDate,
-                      quoteNotifier.updateNeedByDate,
-                      allowNull: true,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernSwitchTile(
-                      'Customer wants photos',
-                      'Receive digital copies from the photoshoot',
-                      quote.wantsPhotosFromShoot,
-                      quoteNotifier.updateWantsPhotosFromShoot,
-                      icon: Icons.photo_library_outlined,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Product Configuration Section
-                ModernSectionCard(
-                  title: 'Product Configuration',
-                  icon: Icons.view_module_outlined,
-                  children: [
-                    _buildModernOptionGrid(
-                      'Size Options',
-                      AppOptions.productSizes,
-                      [quote.productSize],
-                      (size) => quoteNotifier.updateProductSize(
-                        _getProductSizeFromId(size.id),
-                      ),
-                      allowMultiple: false,
-                    ),
-                    if (quote.productSize == ProductSize.custom) ...[
-                      const SizedBox(height: 20),
-                      _buildModernTextField(
-                        'Custom Size',
-                        quote.customSize,
-                        quoteNotifier.updateCustomSize,
-                        icon: Icons.straighten_outlined,
-                        hint: 'Enter custom dimensions (e.g., 30" x 45")',
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    _buildModernRadioOptions(
-                      'Showboard Type',
-                      ShowboardType.values,
-                      quote.showboardType,
-                      quoteNotifier.updateShowboardType,
-                      (value) => value.displayName,
-                      _getShowboardTypeIcon,
-                    ),
-                    if (quote.showboardType == ShowboardType.themedAI) ...[
-                      const SizedBox(height: 20),
-                      _buildModernTextField(
-                        'Theme Description',
-                        quote.themeDescription,
-                        quoteNotifier.updateThemeDescription,
-                        maxLines: 3,
-                        icon: Icons.auto_awesome_outlined,
-                        hint: 'Describe your vision for the AI-themed design',
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    _buildModernOptionGrid(
-                      'Print Materials',
-                      AppOptions.printMaterials,
-                      quote.printMaterials,
-                      (material) => quoteNotifier.togglePrintMaterial(
-                        _getPrintMaterialFromId(material.id),
-                      ),
-                      allowMultiple: true,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildModernOptionGrid(
-                      'Substrate Options',
-                      AppOptions.substrates,
-                      quote.substrates,
-                      (substrate) => quoteNotifier.toggleSubstrate(
-                        _getSubstrateFromId(substrate.id),
-                      ),
-                      allowMultiple: true,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
+                    // Vehicle Info Section
+                    ModernSectionCard(
+                      title: 'Vehicle Information',
+                      icon: Icons.directions_car_outlined,
                       children: [
-                        Expanded(
-                          child: _buildModernSwitchTile(
+                        _buildModernTextField(
+                          'Car Make',
+                          quote.carMake,
+                          quoteNotifier.updateCarMake,
+                          icon: Icons.car_rental_outlined,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildModernTextField(
+                          'Car Model',
+                          quote.carModel,
+                          quoteNotifier.updateCarModel,
+                          icon: Icons.drive_eta_outlined,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildModernTextField(
+                          'Car Color',
+                          quote.carColor,
+                          quoteNotifier.updateCarColor,
+                          icon: Icons.palette_outlined,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Photoshoot Section
+                    ModernSectionCard(
+                      title: 'Photoshoot Details',
+                      icon: Icons.camera_alt_outlined,
+                      children: [
+                        _buildModernRadioOptions(
+                          'Photos taken by',
+                          PhotoTakenBy.values,
+                          quote.photoTakenBy,
+                          quoteNotifier.updatePhotoTakenBy,
+                          (value) => value.displayName,
+                          _getPhotoTakenByIcon,
+                        ),
+                        if (quote.photoTakenBy == PhotoTakenBy.photomotive) ...[
+                          const SizedBox(height: 20),
+                          _buildModernTextField(
+                            'Available Dates',
+                            quote.availableDates,
+                            quoteNotifier.updateAvailableDates,
+                            maxLines: 3,
+                            icon: Icons.date_range_outlined,
+                            hint:
+                                'List your available dates for the photoshoot',
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        _buildModernSwitchTile(
+                          'Priority Service',
+                          'Rush processing for faster delivery',
+                          quote.isPriorityService,
+                          quoteNotifier.updateIsPriorityService,
+                          icon: Icons.speed_outlined,
+                          activeColor: AppTheme.warningOrange,
+                        ),
+                        if (quote.isPriorityService) ...[
+                          const SizedBox(height: 20),
+                          _buildDateTimePicker(
+                            'Need by Date',
+                            quote.needByDate,
+                            quoteNotifier.updateNeedByDate,
+                            allowNull: true,
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        _buildModernSwitchTile(
+                          'Customer wants photos',
+                          'Receive digital copies from the photoshoot',
+                          quote.wantsPhotosFromShoot,
+                          quoteNotifier.updateWantsPhotosFromShoot,
+                          icon: Icons.photo_library_outlined,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Product Configuration Section
+                    ModernSectionCard(
+                      title: 'Product Configuration',
+                      icon: Icons.view_module_outlined,
+                      children: [
+                        _buildModernOptionGrid(
+                          'Size Options',
+                          AppOptions.productSizes,
+                          [quote.productSize],
+                          (size) => quoteNotifier.updateProductSize(
+                            _getProductSizeFromId(size.id),
+                          ),
+                          allowMultiple: false,
+                        ),
+                        if (quote.productSize == ProductSize.custom) ...[
+                          const SizedBox(height: 20),
+                          _buildModernTextField(
+                            'Custom Size',
+                            quote.customSize,
+                            quoteNotifier.updateCustomSize,
+                            icon: Icons.straighten_outlined,
+                            hint: 'Enter custom dimensions (e.g., 30" x 45")',
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        _buildModernRadioOptions(
+                          'Showboard Type',
+                          ShowboardType.values,
+                          quote.showboardType,
+                          quoteNotifier.updateShowboardType,
+                          (value) => value.displayName,
+                          _getShowboardTypeIcon,
+                        ),
+                        if (quote.showboardType == ShowboardType.themedAI) ...[
+                          const SizedBox(height: 20),
+                          _buildModernTextField(
+                            'Theme Description',
+                            quote.themeDescription,
+                            quoteNotifier.updateThemeDescription,
+                            maxLines: 3,
+                            icon: Icons.auto_awesome_outlined,
+                            hint:
+                                'Describe your vision for the AI-themed design',
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        _buildModernOptionGrid(
+                          'Print Materials',
+                          AppOptions.printMaterials,
+                          quote.printMaterials,
+                          (material) => quoteNotifier.setPrintMaterial(
+                            _getPrintMaterialFromId(material.id),
+                          ),
+                          allowMultiple: false,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildModernOptionGrid(
+                          'Substrate Options',
+                          AppOptions.substrates,
+                          quote.substrates,
+                          (substrate) => quoteNotifier.setSubstrate(
+                            _getSubstrateFromId(substrate.id),
+                          ),
+                          allowMultiple: false,
+                        ),
+                        const SizedBox(height: 20),
+                        // Dynamic layout based on available options
+                        if (quote.printMaterials.contains(
+                              PrintMaterial.photoPaper,
+                            ) &&
+                            (quote.productSize == ProductSize.size16x24 ||
+                                quote.productSize == ProductSize.size20x30 ||
+                                quote.productSize == ProductSize.size24x36))
+                          // Both framed and protective case available - show in row
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildModernSwitchTile(
+                                  'Framed',
+                                  'Professional framing',
+                                  quote.isFramed,
+                                  quoteNotifier.updateIsFramed,
+                                  icon: Icons.crop_din_outlined,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildModernSwitchTile(
+                                  'Protective Case',
+                                  quote.hasCombinationCase
+                                      ? 'Disabled (using combination case)'
+                                      : 'Weather protection',
+                                  quote.hasProtectiveCase,
+                                  quote.hasCombinationCase
+                                      ? (_) {} // Disabled callback
+                                      : quoteNotifier.updateHasProtectiveCase,
+                                  icon: Icons.shield_outlined,
+                                ),
+                              ),
+                            ],
+                          )
+                        else if (quote.printMaterials.contains(
+                          PrintMaterial.photoPaper,
+                        ))
+                          // Only framed available - show full width
+                          _buildModernSwitchTile(
                             'Framed',
                             'Professional framing',
                             quote.isFramed,
                             quoteNotifier.updateIsFramed,
                             icon: Icons.crop_din_outlined,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildModernSwitchTile(
+                          )
+                        else if (quote.productSize == ProductSize.size16x24 ||
+                            quote.productSize == ProductSize.size20x30 ||
+                            quote.productSize == ProductSize.size24x36)
+                          // Only protective case available - show full width
+                          _buildModernSwitchTile(
                             'Protective Case',
-                            'Weather protection',
+                            quote.hasCombinationCase
+                                ? 'Disabled (using combination case)'
+                                : 'Weather protection',
                             quote.hasProtectiveCase,
-                            quoteNotifier.updateHasProtectiveCase,
+                            quote.hasCombinationCase
+                                ? (_) {} // Disabled callback
+                                : quoteNotifier.updateHasProtectiveCase,
                             icon: Icons.shield_outlined,
                           ),
-                        ),
+                        // Combination case option (only for supported sizes)
+                        if (quote.productSize == ProductSize.size16x24 ||
+                            quote.productSize == ProductSize.size20x30 ||
+                            quote.productSize == ProductSize.size24x36) ...[
+                          const SizedBox(height: 20),
+                          _buildModernSwitchTile(
+                            'Combination Case',
+                            'Combined protective case & stand carrying case (\$39)',
+                            quote.hasCombinationCase,
+                            quoteNotifier.updateHasCombinationCase,
+                            icon: Icons.inventory_2_outlined,
+                            activeColor: AppTheme.successGreen,
+                          ),
+                        ],
                       ],
                     ),
-                  ],
-                ),
 
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                // Stand Info Section
-                ModernSectionCard(
-                  title: 'Stand Information',
-                  icon: Icons.support_outlined,
-                  children: [
-                    _buildModernOptionGrid(
-                      'Stand Type',
-                      AppOptions.standTypes,
-                      [quote.standType],
-                      (stand) => quoteNotifier.updateStandType(
-                        _getStandTypeFromId(stand.id),
-                      ),
-                      allowMultiple: false,
+                    // Stand Info Section
+                    ModernSectionCard(
+                      title: 'Stand Information',
+                      icon: Icons.support_outlined,
+                      children: [
+                        _buildModernOptionGrid(
+                          'Stand Type',
+                          AppOptions.standTypes,
+                          [quote.standType],
+                          (stand) => quoteNotifier.updateStandType(
+                            _getStandTypeFromId(stand.id),
+                          ),
+                          allowMultiple: false,
+                        ),
+                        if (quote.standType == StandType.premium ||
+                            quote.standType == StandType.premiumSilver ||
+                            quote.standType == StandType.premiumBlack) ...[
+                          const SizedBox(height: 20),
+                          _buildModernSwitchTile(
+                            'Stand Carrying Case',
+                            quote.hasCombinationCase
+                                ? 'Disabled (using combination case)'
+                                : 'Premium protective carrying case',
+                            quote.hasStandCarryingCase,
+                            quote.hasCombinationCase
+                                ? (_) {} // Disabled callback
+                                : quoteNotifier.updateHasStandCarryingCase,
+                            icon: Icons.luggage_outlined,
+                            activeColor: AppTheme.primaryRed,
+                          ),
+                        ],
+                      ],
                     ),
-                    if (quote.standType == StandType.premium) ...[
-                      const SizedBox(height: 20),
-                      _buildModernSwitchTile(
-                        'Stand Carrying Case',
-                        'Premium protective carrying case',
-                        quote.hasStandCarryingCase,
-                        quoteNotifier.updateHasStandCarryingCase,
-                        icon: Icons.luggage_outlined,
-                        activeColor: AppTheme.primaryRed,
-                      ),
-                    ],
+
+                    const SizedBox(height: 32),
+
+                    // Action Buttons
+                    _buildModernActionButtons(quoteOperations, isLoading),
+
+                    const SizedBox(height: 32),
                   ],
                 ),
-
-                const SizedBox(height: 32),
-
-                // Action Buttons
-                _buildModernActionButtons(quoteOperations, isLoading),
-
-                const SizedBox(height: 32),
-              ],
+              ),
             ),
           ),
-        ),
+
+          // Floating price display - always show regardless of price
+          Consumer(
+            builder: (context, ref, child) {
+              final totalPrice = ref.watch(totalPriceProvider);
+              final breakdown = ref.watch(priceBreakdownProvider);
+              final quote = ref.watch(currentQuoteProvider);
+
+              return DraggableFloatingPriceDisplay(
+                totalPrice: totalPrice,
+                breakdown: breakdown,
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => EnhancedPriceBreakdownSheet(
+                      breakdown: breakdown,
+                      totalPrice: totalPrice,
+                      quote: quote,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildVeteranDiscountField(double value, Function(double) onChanged) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryRed.withValues(alpha: .2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.percent_outlined,
+                color: AppTheme.primaryRed,
+                size: 16,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Veteran Discount Percentage',
+              style: TextStyle(
+                color: isDark
+                    ? AppTheme.accentSilver
+                    : AppTheme.lightTextSecondary,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.1),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            initialValue: value.toStringAsFixed(0),
+            decoration: InputDecoration(
+              hintText: 'Enter discount percentage (e.g., 10)',
+              suffixText: '%',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? AppTheme.primaryRed.withValues(alpha: 0.3)
+                      : AppTheme.lightBorder,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? AppTheme.primaryRed.withValues(alpha: 0.3)
+                      : AppTheme.lightBorder,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryRed,
+                  width: 2,
+                ),
+              ),
+              filled: true,
+              fillColor: isDark
+                  ? AppTheme.inputBackground
+                  : AppTheme.lightInputBackground,
+              contentPadding: const EdgeInsets.all(16),
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            style: TextStyle(
+              color: isDark ? Colors.white : AppTheme.lightTextPrimary,
+              fontSize: 16,
+            ),
+            onChanged: (text) {
+              final percentage = double.tryParse(text) ?? 0.0;
+              // Clamp between 0 and 100
+              final clampedPercentage = percentage.clamp(0.0, 100.0);
+              onChanged(clampedPercentage);
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -973,9 +1173,35 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
                           fontSize: 9,
                         ),
                         textAlign: TextAlign.center,
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      // Price display
+                      if (option.price != null) ...[
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.white.withValues(alpha: 0.2)
+                                : AppTheme.primaryRed.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            PricingService.formatPrice(option.price!),
+                            style: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppTheme.primaryRed,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -1184,6 +1410,9 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
   }
 
   bool _isOptionSelected(OptionItem option, List<dynamic> selectedValues) {
+    if (option.id == '8x12') {
+      return selectedValues.contains(ProductSize.size8x12);
+    }
     if (option.id == '16x24') {
       return selectedValues.contains(ProductSize.size16x24);
     }
@@ -1199,9 +1428,6 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
 
     if (option.id == 'photo_paper') {
       return selectedValues.contains(PrintMaterial.photoPaper);
-    }
-    if (option.id == 'vinyl') {
-      return selectedValues.contains(PrintMaterial.vinyl);
     }
     if (option.id == 'aluminum') {
       return selectedValues.contains(PrintMaterial.aluminum);
@@ -1232,12 +1458,20 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
     if (option.id == 'premium') {
       return selectedValues.contains(StandType.premium);
     }
+    if (option.id == 'premium_silver') {
+      return selectedValues.contains(StandType.premiumSilver);
+    }
+    if (option.id == 'premium_black') {
+      return selectedValues.contains(StandType.premiumBlack);
+    }
 
     return false;
   }
 
   ProductSize _getProductSizeFromId(String id) {
     switch (id) {
+      case '8x12':
+        return ProductSize.size8x12;
       case '16x24':
         return ProductSize.size16x24;
       case '20x30':
@@ -1247,7 +1481,7 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
       case 'custom':
         return ProductSize.custom;
       default:
-        return ProductSize.size16x24;
+        return ProductSize.size8x12;
     }
   }
 
@@ -1255,8 +1489,6 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
     switch (id) {
       case 'photo_paper':
         return PrintMaterial.photoPaper;
-      case 'vinyl':
-        return PrintMaterial.vinyl;
       case 'aluminum':
         return PrintMaterial.aluminum;
       case 'acrylic':
@@ -1293,6 +1525,10 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
         return StandType.economy;
       case 'premium':
         return StandType.premium;
+      case 'premium_silver':
+        return StandType.premiumSilver;
+      case 'premium_black':
+        return StandType.premiumBlack;
       default:
         return StandType.none;
     }

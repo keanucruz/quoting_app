@@ -26,6 +26,9 @@ class Quote extends HiveObject {
   @HiveField(6)
   bool isVeteran;
 
+  @HiveField(33)
+  double? veteranDiscountPercentage;
+
   @HiveField(7)
   String address;
 
@@ -98,6 +101,9 @@ class Quote extends HiveObject {
   @HiveField(30)
   bool hasStandCarryingCase;
 
+  @HiveField(34)
+  bool hasCombinationCase;
+
   @HiveField(31)
   DateTime createdAt;
 
@@ -112,6 +118,7 @@ class Quote extends HiveObject {
     this.carEventName = '',
     this.customerName = '',
     this.isVeteran = false,
+    this.veteranDiscountPercentage,
     this.address = '',
     this.city = '',
     this.state = '',
@@ -126,7 +133,7 @@ class Quote extends HiveObject {
     this.isPriorityService = false,
     this.needByDate,
     this.wantsPhotosFromShoot = false,
-    this.productSize = ProductSize.size16x24,
+    this.productSize = ProductSize.size8x12,
     this.customSize = '',
     this.showboardType = ShowboardType.standard,
     this.themeDescription = '',
@@ -136,6 +143,7 @@ class Quote extends HiveObject {
     this.hasProtectiveCase = false,
     this.standType = StandType.none,
     this.hasStandCarryingCase = false,
+    this.hasCombinationCase = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : id = id ?? const Uuid().v4(),
@@ -146,6 +154,10 @@ class Quote extends HiveObject {
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
+  // Getter for veteran discount percentage with default value
+  double get effectiveVeteranDiscountPercentage =>
+      veteranDiscountPercentage ?? 5.0;
+
   Quote copyWith({
     String? id,
     String? completedBy,
@@ -154,6 +166,7 @@ class Quote extends HiveObject {
     String? carEventName,
     String? customerName,
     bool? isVeteran,
+    double? veteranDiscountPercentage,
     String? address,
     String? city,
     String? state,
@@ -178,6 +191,7 @@ class Quote extends HiveObject {
     bool? hasProtectiveCase,
     StandType? standType,
     bool? hasStandCarryingCase,
+    bool? hasCombinationCase,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -189,6 +203,8 @@ class Quote extends HiveObject {
       carEventName: carEventName ?? this.carEventName,
       customerName: customerName ?? this.customerName,
       isVeteran: isVeteran ?? this.isVeteran,
+      veteranDiscountPercentage:
+          veteranDiscountPercentage ?? this.veteranDiscountPercentage,
       address: address ?? this.address,
       city: city ?? this.city,
       state: state ?? this.state,
@@ -213,6 +229,7 @@ class Quote extends HiveObject {
       hasProtectiveCase: hasProtectiveCase ?? this.hasProtectiveCase,
       standType: standType ?? this.standType,
       hasStandCarryingCase: hasStandCarryingCase ?? this.hasStandCarryingCase,
+      hasCombinationCase: hasCombinationCase ?? this.hasCombinationCase,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
@@ -230,12 +247,14 @@ enum PhotoTakenBy {
 @HiveType(typeId: 2)
 enum ProductSize {
   @HiveField(0)
-  size16x24,
+  size8x12,
   @HiveField(1)
-  size20x30,
+  size16x24,
   @HiveField(2)
-  size24x36,
+  size20x30,
   @HiveField(3)
+  size24x36,
+  @HiveField(4)
   custom,
 }
 
@@ -283,6 +302,10 @@ enum StandType {
   economy,
   @HiveField(2)
   premium,
+  @HiveField(3)
+  premiumSilver,
+  @HiveField(4)
+  premiumBlack,
 }
 
 // Extension methods for displaying enum values
@@ -300,6 +323,8 @@ extension PhotoTakenByExtension on PhotoTakenBy {
 extension ProductSizeExtension on ProductSize {
   String get displayName {
     switch (this) {
+      case ProductSize.size8x12:
+        return '8x12';
       case ProductSize.size16x24:
         return '16x24';
       case ProductSize.size20x30:
@@ -363,9 +388,13 @@ extension StandTypeExtension on StandType {
       case StandType.none:
         return 'None';
       case StandType.economy:
-        return 'Economy';
+        return 'Economy Black';
       case StandType.premium:
         return 'Premium';
+      case StandType.premiumSilver:
+        return 'Premium Silver';
+      case StandType.premiumBlack:
+        return 'Premium Black';
     }
   }
 }

@@ -24,6 +24,7 @@ class QuoteAdapter extends TypeAdapter<Quote> {
       carEventName: fields[4] as String,
       customerName: fields[5] as String,
       isVeteran: fields[6] as bool,
+      veteranDiscountPercentage: fields[33] as double?,
       address: fields[7] as String,
       city: fields[8] as String,
       state: fields[9] as String,
@@ -48,6 +49,7 @@ class QuoteAdapter extends TypeAdapter<Quote> {
       hasProtectiveCase: fields[28] as bool,
       standType: fields[29] as StandType,
       hasStandCarryingCase: fields[30] as bool,
+      hasCombinationCase: fields[34] as bool,
       createdAt: fields[31] as DateTime?,
       updatedAt: fields[32] as DateTime?,
     );
@@ -56,7 +58,7 @@ class QuoteAdapter extends TypeAdapter<Quote> {
   @override
   void write(BinaryWriter writer, Quote obj) {
     writer
-      ..writeByte(33)
+      ..writeByte(35)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -71,6 +73,8 @@ class QuoteAdapter extends TypeAdapter<Quote> {
       ..write(obj.customerName)
       ..writeByte(6)
       ..write(obj.isVeteran)
+      ..writeByte(33)
+      ..write(obj.veteranDiscountPercentage)
       ..writeByte(7)
       ..write(obj.address)
       ..writeByte(8)
@@ -119,6 +123,8 @@ class QuoteAdapter extends TypeAdapter<Quote> {
       ..write(obj.standType)
       ..writeByte(30)
       ..write(obj.hasStandCarryingCase)
+      ..writeByte(34)
+      ..write(obj.hasCombinationCase)
       ..writeByte(31)
       ..write(obj.createdAt)
       ..writeByte(32)
@@ -183,32 +189,37 @@ class ProductSizeAdapter extends TypeAdapter<ProductSize> {
   ProductSize read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return ProductSize.size16x24;
+        return ProductSize.size8x12;
       case 1:
-        return ProductSize.size20x30;
+        return ProductSize.size16x24;
       case 2:
-        return ProductSize.size24x36;
+        return ProductSize.size20x30;
       case 3:
+        return ProductSize.size24x36;
+      case 4:
         return ProductSize.custom;
       default:
-        return ProductSize.size16x24;
+        return ProductSize.size8x12;
     }
   }
 
   @override
   void write(BinaryWriter writer, ProductSize obj) {
     switch (obj) {
-      case ProductSize.size16x24:
+      case ProductSize.size8x12:
         writer.writeByte(0);
         break;
-      case ProductSize.size20x30:
+      case ProductSize.size16x24:
         writer.writeByte(1);
         break;
-      case ProductSize.size24x36:
+      case ProductSize.size20x30:
         writer.writeByte(2);
         break;
-      case ProductSize.custom:
+      case ProductSize.size24x36:
         writer.writeByte(3);
+        break;
+      case ProductSize.custom:
+        writer.writeByte(4);
         break;
     }
   }
@@ -384,6 +395,10 @@ class StandTypeAdapter extends TypeAdapter<StandType> {
         return StandType.economy;
       case 2:
         return StandType.premium;
+      case 3:
+        return StandType.premiumSilver;
+      case 4:
+        return StandType.premiumBlack;
       default:
         return StandType.none;
     }
@@ -400,6 +415,12 @@ class StandTypeAdapter extends TypeAdapter<StandType> {
         break;
       case StandType.premium:
         writer.writeByte(2);
+        break;
+      case StandType.premiumSilver:
+        writer.writeByte(3);
+        break;
+      case StandType.premiumBlack:
+        writer.writeByte(4);
         break;
     }
   }
