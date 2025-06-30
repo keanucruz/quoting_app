@@ -70,6 +70,12 @@ class PricingService {
   // Combination case pricing
   static const double combinationCasePrice = 39.0;
 
+  // Stand carrying case pricing (for premium stands)
+  static const double standCarryingCasePrice = 79.0;
+
+  // Priority service fee
+  static const double priorityServiceFee = 39.0;
+
   /// Calculate total price for a quote
   static double calculateTotalPrice(Quote quote) {
     double total = 0.0;
@@ -114,7 +120,18 @@ class PricingService {
       if (quote.hasProtectiveCase) {
         total += protectiveCasePricing[quote.productSize] ?? 0.0;
       }
-      // Stand carrying case is included in stand price, no additional cost
+      // Stand carrying case (for premium stands)
+      if (quote.hasStandCarryingCase &&
+          (quote.standType == StandType.premium ||
+              quote.standType == StandType.premiumSilver ||
+              quote.standType == StandType.premiumBlack)) {
+        total += standCarryingCasePrice;
+      }
+    }
+
+    // Priority service fee
+    if (quote.isPriorityService) {
+      total += priorityServiceFee;
     }
 
     // Veteran discount (custom percentage if applicable)
@@ -183,6 +200,11 @@ class PricingService {
       }
     }
 
+    // Substrates (even if no price)
+    for (Substrate substrate in quote.substrates) {
+      breakdown['${substrate.displayName} Substrate'] = 0.0;
+    }
+
     // Mounting
     if (quote.printMaterials.contains(PrintMaterial.photoPaper) &&
         !quote.isFramed &&
@@ -222,7 +244,19 @@ class PricingService {
               casePrice;
         }
       }
-      // Stand carrying case is included in stand price, no additional cost
+      // Stand carrying case (for premium stands)
+      if (quote.hasStandCarryingCase) {
+        if (quote.standType == StandType.premium ||
+            quote.standType == StandType.premiumSilver ||
+            quote.standType == StandType.premiumBlack) {
+          breakdown['Stand Carrying Case'] = standCarryingCasePrice;
+        }
+      }
+    }
+
+    // Priority service
+    if (quote.isPriorityService) {
+      breakdown['Priority Service'] = priorityServiceFee;
     }
 
     // Veteran discount

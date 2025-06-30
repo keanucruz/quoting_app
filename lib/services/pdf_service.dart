@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import '../models/quote_model.dart';
+import 'pricing_service.dart';
 
 class PdfService {
   static const double _margin = 40.0;
@@ -34,6 +35,8 @@ class PdfService {
             _buildProductConfiguration(quote),
             pw.SizedBox(height: _spacing * 2),
             _buildStandInfo(quote),
+            pw.SizedBox(height: _spacing * 2),
+            _buildPricingBreakdown(quote),
             pw.SizedBox(height: _spacing * 2),
             _buildFooter(),
           ];
@@ -172,6 +175,82 @@ class PdfService {
             quote.hasStandCarryingCase ? 'Yes' : 'No',
           ),
     ]);
+  }
+
+  static pw.Widget _buildPricingBreakdown(Quote quote) {
+    final breakdown = PricingService.getItemizedPricing(quote);
+    final total = PricingService.calculateTotalPrice(quote);
+
+    List<pw.Widget> priceRows = [];
+
+    // Add each line item
+    breakdown.forEach((item, price) {
+      priceRows.add(_buildPriceRow(item, price));
+    });
+
+    // Add total
+    priceRows.add(pw.SizedBox(height: _spacing));
+    priceRows.add(pw.Divider(color: PdfColors.grey600, thickness: 2));
+    priceRows.add(pw.SizedBox(height: _spacing / 2));
+    priceRows.add(
+      pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(
+            'Total Amount',
+            style: pw.TextStyle(
+              fontSize: 16,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.grey800,
+            ),
+          ),
+          pw.Text(
+            PricingService.formatPrice(total),
+            style: pw.TextStyle(
+              fontSize: 16,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.red700,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return _buildSection('Price Breakdown', priceRows);
+  }
+
+  static pw.Widget _buildPriceRow(String item, double price) {
+    final isDiscount = price < 0;
+    final isZeroPrice = price == 0.0;
+    final color = isDiscount ? PdfColors.green600 : PdfColors.grey800;
+
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 6),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Expanded(
+            child: pw.Text(
+              item,
+              style: pw.TextStyle(fontSize: 12, color: color),
+            ),
+          ),
+          pw.Text(
+            isZeroPrice ? 'Included' : PricingService.formatPrice(price.abs()),
+            style: pw.TextStyle(
+              fontSize: 12,
+              color: isZeroPrice ? PdfColors.grey600 : color,
+              fontWeight: isDiscount
+                  ? pw.FontWeight.bold
+                  : pw.FontWeight.normal,
+              fontStyle: isZeroPrice
+                  ? pw.FontStyle.italic
+                  : pw.FontStyle.normal,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   static pw.Widget _buildSection(String title, List<pw.Widget> content) {

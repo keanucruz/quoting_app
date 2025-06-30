@@ -318,6 +318,7 @@ class EnhancedPriceBreakdownSheet extends StatelessWidget {
 
   Widget _buildBreakdownItem(String label, double price, bool isDark) {
     final isDiscount = price < 0;
+    final isZeroPrice = price == 0.0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -337,15 +338,20 @@ class EnhancedPriceBreakdownSheet extends StatelessWidget {
             ),
           ),
           Text(
-            PricingService.formatPrice(price.abs()),
+            isZeroPrice ? 'Included' : PricingService.formatPrice(price.abs()),
             style: TextStyle(
-              color: isDiscount
+              color: isZeroPrice
+                  ? (isDark
+                        ? AppTheme.accentSilver.withValues(alpha: 0.7)
+                        : AppTheme.lightTextSecondary)
+                  : isDiscount
                   ? AppTheme.successGreen
                   : isDark
                   ? Colors.white
                   : AppTheme.lightTextPrimary,
               fontSize: 14,
               fontWeight: FontWeight.w600,
+              fontStyle: isZeroPrice ? FontStyle.italic : FontStyle.normal,
             ),
           ),
         ],
@@ -392,6 +398,21 @@ class EnhancedPriceBreakdownSheet extends StatelessWidget {
             icon: Icons.print,
             color: Colors.green,
             price: PricingService.getMaterialPrice(quote.productSize, material),
+          ),
+        );
+      }
+    }
+
+    // Substrates
+    if (quote.substrates.isNotEmpty) {
+      for (var substrate in quote.substrates) {
+        items.add(
+          SelectedItem(
+            category: 'Substrate',
+            value: substrate.displayName,
+            icon: Icons.layers,
+            color: Colors.deepOrange,
+            price: 0.0, // No price for now
           ),
         );
       }
@@ -464,13 +485,19 @@ class EnhancedPriceBreakdownSheet extends StatelessWidget {
       }
 
       if (quote.hasStandCarryingCase) {
+        double casePrice = 0.0;
+        if (quote.standType == StandType.premium ||
+            quote.standType == StandType.premiumSilver ||
+            quote.standType == StandType.premiumBlack) {
+          casePrice = 79.0; // Premium stand carrying case price
+        }
         items.add(
           SelectedItem(
             category: 'Stand Accessory',
             value: 'Stand Carrying Case',
             icon: Icons.luggage,
             color: Colors.indigo,
-            price: 0.0, // Included in stand price
+            price: casePrice,
           ),
         );
       }
