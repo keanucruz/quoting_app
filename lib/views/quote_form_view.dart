@@ -31,7 +31,7 @@ class _QuoteFormViewState extends ConsumerState<QuoteFormView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Showboard Quote'),
+        title: const Text('Photomotive Group Quote'),
         backgroundColor: Colors.grey[900],
         foregroundColor: Colors.white,
         elevation: 2,

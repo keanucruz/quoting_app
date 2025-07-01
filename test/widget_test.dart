@@ -8,12 +8,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:showboard_quoting_app/main.dart';
+import 'package:photomotive_group_quotes/main.dart';
 
 void main() {
   testWidgets('App loads successfully', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const ProviderScope(child: ShowboardQuotingApp()));
+    await tester.pumpWidget(const ProviderScope(child: PhotomotiveGroupApp()));
 
     // Verify that our app loads with the main screen
     expect(find.text('New Quote'), findsOneWidget);

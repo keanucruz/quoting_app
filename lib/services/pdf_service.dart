@@ -59,17 +59,31 @@ class PdfService {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            'SHOWBOARD QUOTE',
+            'PHOTOMOTIVE GROUP',
             style: pw.TextStyle(
               fontSize: 28,
               fontWeight: pw.FontWeight.bold,
               color: PdfColors.white,
             ),
           ),
+          pw.SizedBox(height: 4),
+          pw.Text(
+            'Car Event Photography Quote',
+            style: pw.TextStyle(
+              fontSize: 18,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.redAccent,
+            ),
+          ),
           pw.SizedBox(height: 8),
           pw.Text(
-            'Car Photography Services',
-            style: pw.TextStyle(fontSize: 16, color: PdfColors.grey300),
+            'Professional Car Photography & Custom Products',
+            style: pw.TextStyle(fontSize: 14, color: PdfColors.grey300),
+          ),
+          pw.SizedBox(height: 4),
+          pw.Text(
+            'Contact: 409-223-7567 | info@PhotomotiveGroup.com',
+            style: pw.TextStyle(fontSize: 12, color: PdfColors.grey400),
           ),
         ],
       ),
@@ -324,13 +338,43 @@ class PdfService {
         crossAxisAlignment: pw.CrossAxisAlignment.center,
         children: [
           pw.Text(
-            'Thank you for choosing our car photography services!',
+            'PHOTOMOTIVE GROUP',
             style: pw.TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: pw.FontWeight.bold,
               color: PdfColors.grey800,
             ),
           ),
+          pw.SizedBox(height: 4),
+          pw.Text(
+            'Capturing High-Quality, Unique Car Images for Car Shows & Collections',
+            style: pw.TextStyle(
+              fontSize: 12,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.red700,
+            ),
+          ),
+          pw.SizedBox(height: 8),
+          pw.Text(
+            'Thank you for choosing Photomotive Group for your car photography needs!',
+            style: pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+          ),
+          pw.SizedBox(height: 8),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.center,
+            children: [
+              pw.Text(
+                'Contact: 409-223-7567 | info@PhotomotiveGroup.com',
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.grey600,
+                ),
+              ),
+            ],
+          ),
+          pw.SizedBox(height: 8),
+          pw.Divider(color: PdfColors.grey400, thickness: 1),
           pw.SizedBox(height: 8),
           pw.Text(
             'This quote is valid for 30 days from the date of issue.',
@@ -365,8 +409,8 @@ class PdfService {
 
     await Share.shareXFiles(
       [XFile(file.path)],
-      text: 'Showboard Quote for ${quote.customerName}',
-      subject: 'Car Photography Services Quote',
+      text: 'Photomotive Group Quote for ${quote.customerName}',
+      subject: 'Photomotive Group Car Photography Quote',
     );
   }
 

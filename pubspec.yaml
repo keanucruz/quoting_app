@@ -1,5 +1,5 @@
-name: showboard_quoting_app
-description: "Showboard Quoting App for Car Photography Services"
+name: photomotive_group_quotes
+description: "Professional Car Photography Quote Generator for Photomotive Group Services"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

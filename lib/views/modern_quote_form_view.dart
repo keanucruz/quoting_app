@@ -37,7 +37,7 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
 
     return Scaffold(
       appBar: ModernAppBar(
-        title: 'New Quote',
+        title: 'Photomotive Group Quote',
         actions: [
           Consumer(
             builder: (context, ref, child) {
@@ -104,6 +104,117 @@ class _ModernQuoteFormViewState extends ConsumerState<ModernQuoteFormView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Branded Header Section
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.redGradient,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.primaryRed.withValues(alpha: 0.3),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'PHOTOMOTIVE GROUP',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Professional Car Photography Services',
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.9,
+                                        ),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.phone,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '409-223-7567',
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                const Icon(
+                                  Icons.email,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'info@PhotomotiveGroup.com',
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
                     // Order Info Section
                     ModernSectionCard(
                       title: 'Order Information',

@@ -12,18 +12,18 @@ void main() async {
   // Initialize storage service
   await StorageService.init();
 
-  runApp(const ProviderScope(child: ShowboardQuotingApp()));
+  runApp(const ProviderScope(child: PhotomotiveGroupApp()));
 }
 
-class ShowboardQuotingApp extends ConsumerWidget {
-  const ShowboardQuotingApp({super.key});
+class PhotomotiveGroupApp extends ConsumerWidget {
+  const PhotomotiveGroupApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
-      title: 'Showboard Quoting App',
+      title: 'Photomotive Group Quotes',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode == AppThemeMode.light
@@ -284,7 +284,7 @@ class QuoteHistoryView extends ConsumerWidget {
           ),
           const SizedBox(width: 12),
           const Text(
-            'Quote History',
+            'Photomotive Group History',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w700,
